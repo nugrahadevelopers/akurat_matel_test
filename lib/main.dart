@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:akurat_matel/app_theme.dart';
-import 'package:akurat_matel/navigation_home_screen.dart';
+import 'package:akurat_matel/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -31,7 +31,8 @@ class MyApp extends StatelessWidget {
         textTheme: AppTheme.textTheme,
         platform: TargetPlatform.android,
       ),
-      home: NavigationHomeScreen(),
+      // home: NavigationHomeScreen(),
+      home: LoginPage(),
     );
   }
 }
