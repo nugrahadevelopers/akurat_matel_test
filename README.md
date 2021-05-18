@@ -1,4 +1,4 @@
-# akurat_matel
+# Akurat Matel
 
 Aplikasi DC Android dengan flutter
 
