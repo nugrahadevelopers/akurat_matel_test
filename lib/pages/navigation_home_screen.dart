@@ -1,9 +1,9 @@
-import 'package:akurat_matel/profil_screen.dart';
+import 'package:akurat_matel/pages/profil_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:akurat_matel/app_theme.dart';
-import 'package:akurat_matel/custom_drawer/drawer_user_controller.dart';
-import 'package:akurat_matel/custom_drawer/home_drawer.dart';
-import 'package:akurat_matel/home_screen.dart';
+import 'package:akurat_matel/pages/custom_drawer/drawer_user_controller.dart';
+import 'package:akurat_matel/pages/custom_drawer/home_drawer.dart';
+import 'package:akurat_matel/pages/home_screen.dart';
 
 class NavigationHomeScreen extends StatefulWidget {
   @override

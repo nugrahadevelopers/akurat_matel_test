@@ -1,5 +1,5 @@
 import 'package:akurat_matel/app_theme.dart';
-import 'package:akurat_matel/custom_drawer/home_drawer.dart';
+import 'package:akurat_matel/pages/custom_drawer/home_drawer.dart';
 import 'package:flutter/material.dart';
 
 class DrawerUserController extends StatefulWidget {

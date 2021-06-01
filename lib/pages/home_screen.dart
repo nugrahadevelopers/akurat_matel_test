@@ -1,6 +1,12 @@
-import 'package:akurat_matel/model/homelist.dart';
+import 'dart:convert';
+
+import 'package:akurat_matel/models/car_model.dart';
+import 'package:akurat_matel/pages/detail_kendaraan_screen.dart';
+import 'package:akurat_matel/services/database_handler.dart';
+import 'package:akurat_matel/util/app_url.dart';
 import 'package:flutter/material.dart';
 import 'package:akurat_matel/app_theme.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -10,28 +16,58 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  List<HomeList> homeList = HomeList.homeList;
+  DatabaseHandler handler;
+  // bool isLoading = false;
   bool multiple = true;
 
-  Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 0));
-    return true;
+  @override
+  void initState() {
+    super.initState();
+    this.handler = DatabaseHandler();
+    this.handler.initDB().whenComplete(() async {
+      // setState(() {
+      //   isLoading = true;
+      // });
+      await _fetchCar();
+      setState(() {
+        // isLoading = false;
+      });
+    });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Future<int> _fetchCar() async {
+    var myURL = Uri.parse(AppUrl.kendaraan);
+    var response = await http.get(myURL);
+
+    if (response.statusCode == 200) {
+      try {
+        List jsonObject = json.decode(response.body)['data'];
+
+        return await this
+            .handler
+            .insertCar(jsonObject.map((e) => CarModel.fromJson(e)).toList());
+      } catch (error) {
+        print('Error response: $error');
+        return null;
+      }
+    } else {
+      print('Failed to Load Coin from API');
+      return null;
+    }
+  }
+
+  FutureBuilder<List<CarModel>> buildFutureBuilder() {
     var maxWidth = 112.0;
     var width = MediaQuery.of(context).size.width;
     var columns = (width ~/ maxWidth) + 1;
     var columnWidth = width / columns;
     var aspectRatio = columnWidth / 136;
 
-    return Scaffold(
-      backgroundColor: AppTheme.white,
-      body: FutureBuilder<bool>(
-        future: getData(),
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+    return FutureBuilder(
+        future: this.handler.retrieveCar(),
+        builder: (context, snapshot) {
           if (!snapshot.hasData) {
+            print('Snapshot Error: ${snapshot.error}');
             return const SizedBox();
           } else {
             return Padding(
@@ -42,29 +78,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 children: <Widget>[
                   appBar(),
                   Expanded(
-                    child: FutureBuilder<bool>(
-                      future: getData(),
-                      builder:
-                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    child: FutureBuilder(
+                      future: this.handler.retrieveCar(),
+                      builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return const SizedBox();
                         } else {
+                          List<CarModel> data = snapshot.data;
                           return GridView(
                             padding: const EdgeInsets.only(
                                 top: 0, left: 12, right: 12),
                             physics: const BouncingScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             children: List<Widget>.generate(
-                              homeList.length,
+                              data.length,
                               (int index) {
                                 return HomeListView(
-                                  listData: homeList[index],
+                                  listData: data[index],
                                   callBack: () {
                                     Navigator.push<dynamic>(
                                       context,
                                       MaterialPageRoute<dynamic>(
-                                        builder: (BuildContext context) =>
-                                            homeList[index].navigateScreen,
+                                        builder: (context) =>
+                                            DetailKendaraanPage(
+                                                car: data[index]),
                                       ),
                                     );
                                   },
@@ -86,8 +123,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             );
           }
-        },
-      ),
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.white,
+      body: buildFutureBuilder(),
     );
   }
 
@@ -156,7 +199,7 @@ class HomeListView extends StatelessWidget {
     this.callBack,
   }) : super(key: key);
 
-  final HomeList listData;
+  final CarModel listData;
   final VoidCallback callBack;
 
   @override
@@ -189,7 +232,7 @@ class HomeListView extends StatelessWidget {
                 margin: EdgeInsets.all(5),
                 child: Icon(Icons.account_box),
               ),
-              Text(listData.tanggalTempo),
+              Text('${listData.overDue} Hari'),
             ],
           ),
           Row(
@@ -207,7 +250,7 @@ class HomeListView extends StatelessWidget {
                 margin: EdgeInsets.all(5),
                 child: Icon(Icons.account_box),
               ),
-              Text(listData.merkKendaraan),
+              Flexible(child: Text(listData.jenis)),
             ],
           ),
         ],

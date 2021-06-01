@@ -1,4 +1,4 @@
-import 'package:akurat_matel/detail_kendaraan_screen.dart';
+import 'package:akurat_matel/pages/detail_kendaraan_screen.dart';
 import 'package:flutter/widgets.dart';
 
 class HomeList {

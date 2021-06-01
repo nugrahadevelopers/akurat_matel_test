@@ -1,6 +1,6 @@
 import 'package:akurat_matel/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:akurat_matel/login_screen.dart';
+import 'package:akurat_matel/pages/login_screen.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer(
@@ -165,8 +165,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
   void onTapped() {
     print('SignOut...');
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => LoginPage(),
-          )); // Print to console.
+      builder: (context) => LoginPage(),
+    )); // Print to console.
   }
 
   Widget inkwell(DrawerList listData) {
